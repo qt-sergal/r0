@@ -1,22 +1,24 @@
-CC= clang-8
+_CC=i686-elf-gcc
 
 ARCH?=i386
 
 TARGET= ${ARCH}-pc-none-bin
 
-KERNEL_CF= ${CF} -I kernel/inc -target ${TARGET}
-CF= -nostdlib -ffreestanding
-EF= -serial stdio -net none -m 2M
+_CF= -I kernel/inc
+_EF= -serial stdio -net none -m 2M
 NAME= r0
 
 run: clean kernel.bin
-	qemu-system-${ARCH} ${EF} -kernel kernel.bin
+	qemu-system-${ARCH} ${_EF} -kernel kernel.bin
+
+kernel.bin: boot.o kernel.o
+	ld -m elf_i386 -T linker.ld -o $@ $^
 
 boot.o:
-	nasm -f elf32 kernel/boot.s -o $@
+	nasm -f elf32 kernel/boot.asm -o $@
 
-kernel.bin: boot.o
-	${CC} -T linker.ld -o $@ ${KERNEL_CF} $^ kernel/main.c
+kernel.o:
+	${_CC} -c -o $@ ${_CF} kernel/main.c
 
 clean:
 	rm -rf *.bin *.o *.iso

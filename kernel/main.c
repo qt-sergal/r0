@@ -3,7 +3,7 @@
 #include <cpu/idt.h>
 #include <io/com.h>
 
-__attribute__((interrupt)) void generic_exception_handler(struct interrupt_frame *frame)
+void generic_exception_handler(struct interrupt_frame *frame)
 {
     serial_write_string(COM1, "Interrupt occured\n");
 }
